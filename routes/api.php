@@ -8,5 +8,6 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::get('/', [ProductController::class, 'index']);
-Route::get('/product/{id}', [ProductController::class, 'show']);
+Route::apiResource('product', ProductController::class)->only([
+    'index', 'store', 'show', 'update', 'destroy'
+]);
