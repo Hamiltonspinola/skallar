@@ -33,7 +33,7 @@ class ProductController extends Controller
         if ($validator->fails()) {
             return $this->errors(422, "Dados inválidos", $validator->errors());
         }
-        
+
         $created = Product::create($validator->validated());
         return $this->success(200, "Objeto criado", $created);
     }
@@ -43,20 +43,21 @@ class ProductController extends Controller
         return ProductResource::make(Product::find($id));
     }
 
-
-    public function edit(string $id)
-    {
-        //
-    }
-
-
     public function update(Request $request, string $id)
     {
-        //
+        $updated = Product::find($id)->update($request->all());
+        if($updated){
+            return $this->success(200,"Objeto atualizado", $updated);
+        }
+        return $this->error(422,"Objeto não atualizado", $updated);
     }
-
+    
     public function destroy(string $id)
     {
-        //
+        $deleted = Product::find($id)->delete();
+        if($deleted){
+            return $this->success(200,"Objeto excluido", $deleted);
+        }
+        return $this->error(422,"Objeto não excluido", ($deleted == null) ? "" : []);
     }
 }
