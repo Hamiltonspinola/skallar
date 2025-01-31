@@ -1,5 +1,4 @@
 import { useProducts } from '../hooks/useProducts';
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 export const ProductTable = () => {
@@ -7,7 +6,7 @@ export const ProductTable = () => {
   const { products, loading, page, setPage, totalPages, deleteProduct } = useProducts(10);
 
   return (
-    <div className="p-4">
+    <div className="">
       {loading ? (
         <div className="flex justify-center items-center h-32">
           <p className="text-lg font-semibold text-gray-500 animate-pulse">Carregando produtos...</p>
