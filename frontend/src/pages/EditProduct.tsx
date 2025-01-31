@@ -15,11 +15,11 @@ export const EditProduct = () => {
     const fetchProduct = async () => {
       try {
         const response = await ProductService.getById(Number(id));
-        console.log('Produto carregado:', response.data);
+        console.log('Produto carregado:', response.data.data);
 
         setInitialData({
           name: response.data.data.name,
-          price: response.data.data.price.replace(',', '.'),
+          price: String(response.data.data.price).replace(',', '.'),
           quantity: parseInt(response.data.data.quantity) || 0,
           description: response.data.data.description,
         });
@@ -46,5 +46,7 @@ export const EditProduct = () => {
 
   if (isLoading || !formData) return <p className="text-center">Carregando...</p>;
 
-  return <ProductForm formData={formData} onChange={handleChange} onSubmit={handleSubmit} />;
+  return <div className='w-full'>
+    <ProductForm formData={formData} onChange={handleChange} onSubmit={handleSubmit} />;
+  </div>
 };

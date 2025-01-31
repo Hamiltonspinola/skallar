@@ -1,33 +1,23 @@
 <?php
-
 namespace App\Traits;
-
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Client\Response;
-use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\MessageBag;
-
 trait HttpResponses
 {
-
-    public function success(int $code, string $message = "", array|Model|bool|JsonResource $data = [])
+    public function success(int $code, string $message = "", $data = [])
     {
         return response()->json([
             'status' => $code,
-            'message' =>$message,
+            'message' => $message,
             'data' => $data
         ], $code);
-
     }
 
-    public function errors(int $code, string $message = "", array|MessageBag|\Exception|Response $errors = [], array $data = [])
+    public function errors(int $code, string $message = "", $errors = [], $data = [])
     {
         return response()->json([
             'status' => $code,
-            'message' =>$message,
+            'message' => $message,
             'data' => $data,
-            'errors'=> $errors
+            'errors' => $errors
         ], $code);
-
     }
 }

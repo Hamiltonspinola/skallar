@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -9,57 +8,71 @@ use App\Models\Product;
 use App\Services\ProductService;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
-use Log;
 
 class ProductController extends Controller
 {
     use HttpResponses;
 
-    protected $productService;
+    protected ProductService $productService;
 
     public function __construct(ProductService $productService)
     {
         $this->productService = $productService;
     }
 
-    public function index()
+    public function index(Request $request)
+{
+    $perPage = (int) $request->query('per_page', 10);
+    $products = $this->productService->getPaginatedProducts($perPage);
+
+    return $this->success(
+         200,
+         "Produtos obtidos com sucesso!",
+         $products
+    );
+}
+
+
+    public function show(int $id)
     {
-        return $this->success(201, "Dados obtidos",ProductResource::collection(Product::all()));
+        $product = $this->productService->getProductById($id);
+
+        if (!$product) {
+            return $this->errors(404, "Produto não encontrado");
+        }
+
+        return $this->success(200, "Produto encontrado!", $product);
     }
-    
-    
+
     public function store(CreateProductRequest $request)
     {
         try {
             $product = $this->productService->create($request->validated());
-            return $this->success(200, "Objeto criado", $product);
-            
+            return $this->success(201, "Produto criado com sucesso!", $product);
         } catch (\Exception $e) {
-            return $this->errors(500, "Dados inválidos", ['exception' => $e->getMessage()]);
+            return $this->errors(500, "Erro ao criar o produto", ['exception' => $e->getMessage()]);
         }
-    }
-    
-    public function show(string $id)
-    {
-        return $this->success(201, "Dados obtidos",ProductResource::make(Product::find($id)));
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, int $id)
     {
-        Log::info($request->all());
-        $updated = Product::find($id)->update($request->all());
-        if ($updated) {
-            return $this->success(200, "Objeto atualizado", $updated);
+        $product = Product::find($id);
+        if (!$product) {
+            return $this->errors(404, "Produto não encontrado");
         }
-        return $this->error(422, "Objeto não atualizado", $updated);
+
+        $updatedProduct = $this->productService->update($product, $request->all());
+        return $this->success(200, "Produto atualizado com sucesso!", $updatedProduct);
     }
 
-    public function destroy(string $id)
+    public function destroy(int $id)
     {
-        $deleted = Product::find($id)->delete();
-        if ($deleted) {
-            return $this->success(200, "Objeto excluido", $deleted);
+        $product = Product::find($id);
+        if (!$product) {
+            return $this->errors(404, "Produto não encontrado");
         }
-        return $this->error(422, "Objeto não excluido", ($deleted == null) ? "" : []);
+
+        $this->productService->delete($product);
+        return $this->success(200, "Produto excluído com sucesso!");
     }
 }

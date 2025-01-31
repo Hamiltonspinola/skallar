@@ -6,7 +6,7 @@ type ProductFormProps = {
 
 export const ProductForm = ({ formData, onChange, onSubmit }: ProductFormProps) => {
   return (
-    <form className="flex flex-col max-w-md gap-4 p-4 mx-auto" onSubmit={onSubmit}>
+    <form className="flex flex-col max-w-lg gap-4 p-4 mx-auto" onSubmit={onSubmit}>
       <input className="p-2 border" name="name" placeholder="Nome" value={formData.name} onChange={onChange} />
       <input className="p-2 border" name="price" placeholder="Preço" value={formData.price} onChange={onChange} />
       <input className="p-2 border" name="quantity" placeholder="Quantidade" value={formData.quantity} onChange={onChange} />
