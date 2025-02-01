@@ -1,23 +1,28 @@
 <?php
 namespace App\Traits;
+
 trait HttpResponses
 {
-    public function success(int $code, string $message = "", $data = [])
+    protected function baseResponse(int $code, string $message, $data = [], array $extra = [])
     {
-        return response()->json([
-            'status' => $code,
-            'message' => $message,
-            'data' => $data
-        ], $code);
+        $response = array_merge([
+            'status'    => $code,
+            'message'   => $message,
+            'data'      => $data,
+            'timestamp' => now()->toIso8601String(),
+        ], $extra);
+
+        return response()->json($response, $code);
     }
 
-    public function errors(int $code, string $message = "", $errors = [], $data = [])
+    public function success(int $code, string $message = "", $data = [], array $extra = [])
     {
-        return response()->json([
-            'status' => $code,
-            'message' => $message,
-            'data' => $data,
-            'errors' => $errors
-        ], $code);
+        return $this->baseResponse($code, $message, $data, $extra);
+    }
+
+    public function errors(int $code, string $message = "", $errors = [], $data = [], array $extra = [])
+    {
+        $extra = array_merge(['errors' => $errors], $extra);
+        return $this->baseResponse($code, $message, $data, $extra);
     }
 }

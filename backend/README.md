@@ -1,66 +1,191 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Product API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Esta é uma API desenvolvida em **Laravel 10** para gerenciar produtos, implementando funcionalidades de criação, consulta, atualização e deleção. A aplicação foi construída com foco na manutenibilidade, escalabilidade e performance, utilizando princípios de **Clean Code** e os padrões **SOLID**.
 
-## About Laravel
+## Sumário
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- [Introdução](#introdução)
+- [Paradigmas, Padrões e Conceitos Aplicados](#paradigmas-padrões-e-conceitos-aplicados)
+- [Benefícios da Arquitetura Utilizada](#benefícios-da-arquitetura-utilizada)
+- [Requisitos](#requisitos)
+- [Instalação e Configuração](#instalação-e-configuração)
+- [Execução com Docker](#execução-com-docker)
+- [Manual de Uso da API](#manual-de-uso-da-api)
+  - [Endpoints Disponíveis](#endpoints-disponíveis)
+  - [Como Utilizar a API (Passo a Passo)](#como-utilizar-a-api-passo-a-passo)
+- [Considerações Finais](#considerações-finais)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Introdução
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Esta API permite gerenciar um catálogo de produtos, possibilitando operações como listagem, consulta por ID, criação, atualização e exclusão de produtos. A aplicação foi estruturada para separar as responsabilidades em diferentes camadas, o que facilita a manutenção e a evolução do sistema.
 
-## Learning Laravel
+## Paradigmas, Padrões e Conceitos Aplicados
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **SOLID**:  
+  - **SRP (Single Responsibility Principle):** Cada classe (Controller, Service, Repository) tem uma única responsabilidade.  
+  - **DIP (Dependency Inversion Principle):** O _service_ depende de abstrações (interfaces) e não de implementações concretas, permitindo a troca de componentes (por exemplo, o uso do cache com Redis).
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **Repository Pattern:**  
+  Separa a lógica de acesso aos dados em uma camada dedicada (Repository). Isso desacopla o acesso ao banco de dados e permite que a aplicação seja facilmente adaptada a mudanças ou migrações para outros sistemas de armazenamento.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Service Pattern:**  
+  Centraliza a lógica de negócio em uma camada de serviço, que orquestra as operações de forma independente da forma como os dados são armazenados ou apresentados.
 
-## Laravel Sponsors
+- **Decorator Pattern para Cache:**  
+  Implementa uma camada de cache (utilizando Redis) para otimizar a recuperação dos dados sem alterar a implementação original do repositório. Essa camada intercepta chamadas de leitura e armazena os resultados no cache, melhorando a performance da aplicação.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+- **Clean Code:**  
+  O código foi escrito de forma clara e modular, com uma separação de responsabilidades que facilita a leitura, testes e manutenção.
 
-### Premium Partners
+## Benefícios da Arquitetura Utilizada
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+- **Manutenção e Evolução:**  
+  Ao separar as responsabilidades, cada camada pode ser modificada ou estendida sem impactar as demais.
+  
+- **Testabilidade:**  
+  Com a injeção de dependências e o uso de interfaces, torna-se mais fácil criar testes unitários para cada parte do sistema.
+  
+- **Escalabilidade:**  
+  O uso do cache com Redis melhora a performance, principalmente em ambientes com alto volume de acessos.
+  
+- **Flexibilidade:**  
+  A aplicação pode evoluir para incluir novos recursos ou trocar componentes (como o driver de cache) sem reescrever a lógica de negócio.
 
-## Contributing
+## Requisitos
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- **PHP 8.0+**
+- **Composer**
+- **Banco de Dados** (por exemplo, MySQL ou PostgreSQL)
+- **Redis**
+- (Opcional) **Docker** e **Docker Compose** para facilitar a configuração dos ambientes
 
-## Code of Conduct
+## Instalação e configuração
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**Clone o repositório:**
 
-## Security Vulnerabilities
+    ```bash
+    git clone https://github.com/seu-usuario/product-api.git
+    
+    cd product-api
+    
+    composer install
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+    cp .env.example .env
 
-## License
+**Execução local**
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=nome_do_banco
+    DB_USERNAME=seu_usuario
+    DB_PASSWORD=sua_senha
+
+    CACHE_DRIVER=redis
+    REDIS_HOST=127.0.0.1
+    REDIS_PASSWORD=null
+    REDIS_PORT=6379
+
+    php artisan key:generate
+
+    php artisan migrate
+
+    php artisan serve
+
+**Execução com Docker**
+
+    docker-compose up -d
+
+    docker-compose logs -f
+
+
+# Manual de Uso da API
+
+Mesmo que você não tenha conhecimentos técnicos em programação, este guia explica de forma simples como utilizar a API.
+
+---
+
+## Endpoints Disponíveis
+
+### Listar Produtos (Paginação)
+- **Método:** `GET`
+- **URL:** `/api/product`
+- **Descrição:** Lista todos os produtos cadastrados. Aceita o parâmetro opcional `per_page` para definir quantos produtos serão exibidos por página.
+
+### Consultar Produto por ID
+- **Método:** `GET`
+- **URL:** `/api/product/{id}`
+- **Descrição:** Retorna os detalhes de um produto específico. Substitua `{id}` pelo número identificador do produto.
+
+### Criar Produto
+- **Método:** `POST`
+- **URL:** `/api/product`
+- **Descrição:** Cria um novo produto.
+- **Dados Necessários (JSON):**
+  - `name` (Nome do produto)
+  - `description` (Descrição do produto)
+  - `price` (Preço do produto, por exemplo, 49.99)
+  - `quantity` (Quantidade em estoque)
+
+### Atualizar Produto
+- **Método:** `PUT`
+- **URL:** `/api/product/{id}`
+- **Descrição:** Atualiza os dados de um produto existente. Substitua `{id}` pelo identificador do produto.
+- **Dados Necessários:** Envie os campos que deseja atualizar.
+
+### Excluir Produto
+- **Método:** `DELETE`
+- **URL:** `/api/product/{id}`
+- **Descrição:** Remove o produto especificado do sistema.
+
+---
+
+## Como Utilizar a API (Passo a Passo)
+
+### Ferramentas de Consumo da API
+
+- **Postman** ou **Insomnia**  
+  São aplicativos que permitem enviar requisições HTTP e visualizar as respostas em formato JSON. São intuitivos e não exigem conhecimentos avançados.
+
+### Exemplo de Uso com o Postman
+
+#### Para Listar Produtos:
+1. Abra o Postman e crie uma nova requisição.
+2. Selecione o método **GET**.
+3. Digite a URL:  
+   `http://127.0.0.1:8000/api/product?per_page=10`
+4. Clique em **Send** (Enviar) e veja a lista de produtos.
+
+#### Para Consultar um Produto:
+1. Crie uma nova requisição **GET**.
+2. Utilize a URL:  
+   `http://127.0.0.1:8000/api/product/1`  
+   *(substitua `1` pelo ID do produto desejado)*
+3. Clique em **Send** para ver os detalhes do produto.
+
+#### Para Criar um Produto:
+1. Crie uma requisição **POST**.
+2. Utilize a URL:  
+   `http://127.0.0.1:8000/api/product`
+3. No corpo da requisição, selecione o formato **raw** e escolha **JSON**.
+4. Insira um JSON como o exemplo abaixo:
+   ```json
+   {
+     "name": "Camiseta Exemplo",
+     "description": "Camiseta de algodão, cor azul",
+     "price": "39.99",
+     "quantity": 100
+   }
+
+#### Para Atualizar (Editar) um Produto
+
+1. Crie uma requisição **PUT**.
+2. Utilize a URL:  
+   `http://127.0.0.1:8000/api/product/1`  
+   *(Substitua `1` pelo ID do produto que deseja editar.)*
+3. No corpo da requisição, envie os campos que deseja atualizar (em formato JSON). Por exemplo:
+   ```json
+   {
+     "price": "29.99",
+     "quantity": 150
+   }

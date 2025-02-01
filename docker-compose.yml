@@ -4,8 +4,8 @@ services:
   # Serviço do backend Laravel
   backend:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: laravel_backend
     restart: always
     working_dir: /var/www/html
@@ -13,12 +13,12 @@ services:
       - ./backend:/var/www/html
       - ./backend/storage:/var/www/html/storage
     ports:
-      - "8000:8000"
+      - "8000:80"
     depends_on:
       - database
+      - redis
     environment:
       - APP_ENV=local
-      - APP_KEY=base64:$(openssl rand -base64 32)
       - APP_DEBUG=true
       - APP_URL=http://localhost:8000
       - DB_CONNECTION=mysql
@@ -27,6 +27,10 @@ services:
       - DB_DATABASE=laravel
       - DB_USERNAME=root
       - DB_PASSWORD=root
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=null
+      - REDIS_PORT=6379
+
   # Serviço do banco de dados MySQL
   database:
     image: mysql:8.0
@@ -38,9 +42,40 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
+
+  migrate:
+      build:
+        context: ./backend
+        dockerfile: Dockerfile
+      container_name: laravel_migrate
+      working_dir: /var/www/html
+      depends_on:
+        - database
+      environment:
+        - APP_ENV=local
+        - APP_DEBUG=true
+        - DB_CONNECTION=mysql
+        - DB_HOST=database
+        - DB_PORT=3306
+        - DB_DATABASE=laravel
+        - DB_USERNAME=root
+        - DB_PASSWORD=root
+      command: >
+        sh -c "sleep 10 && 
+        php artisan migrate --force && 
+        php artisan db:seed --force"
+  # Serviço do Redis
+  redis:
+    image: redis:alpine
+    container_name: redis_cache
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
 
   # Serviço do frontend React
   frontend:
@@ -58,3 +93,4 @@ services:
 
 volumes:
   db_data:
+  redis_data:

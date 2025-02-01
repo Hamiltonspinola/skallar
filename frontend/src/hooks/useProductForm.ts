@@ -1,13 +1,21 @@
 import { useState, useEffect } from 'react';
 
-export const useProductForm = (initialState = null) => {
-  const [formData, setFormData] = useState(initialState || { name: '', price: '', quantity: '', description: '' });
-  const [isLoading, setIsLoading] = useState(true);
+export const useProductForm = (initialState: any = {}) => {
+  const [formData, setFormData] = useState({
+    name: initialState?.name || '',
+    price: initialState?.price ? String(initialState.price) : '',
+    quantity: initialState?.quantity ?? 0,
+    description: initialState?.description || '',
+  });
 
   useEffect(() => {
-    if (initialState) {
-      setFormData((prev) => ({ ...prev, ...initialState }));
-      setIsLoading(false);
+    if (initialState && Object.keys(initialState).length > 0) {
+      setFormData({
+        name: initialState.name,
+        price: String(initialState.price),
+        quantity: initialState.quantity,
+        description: initialState.description,
+      });
     }
   }, [initialState]);
 
@@ -24,5 +32,5 @@ export const useProductForm = (initialState = null) => {
     return value.replace(',', '.').replace(/[^0-9.]/g, '');
   };
 
-  return { formData, handleChange, setFormData, isLoading };
+  return { formData, handleChange, setFormData };
 };

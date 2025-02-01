@@ -1,19 +1,15 @@
 <?php
+
 namespace App\Services;
 
 use App\Http\Resources\Api\ProductResource;
-use App\Models\Product;
-use App\Repositories\ProductRepository;
-use App\Traits\HttpResponses;
-use Illuminate\Pagination\LengthAwarePaginator;
+use App\Repositories\ProductRepositoryInterface;
 
 class ProductService
 {
-    use HttpResponses;
+    protected ProductRepositoryInterface $productRepository;
 
-    protected ProductRepository $productRepository;
-
-    public function __construct(ProductRepository $productRepository)
+    public function __construct(ProductRepositoryInterface $productRepository)
     {
         $this->productRepository = $productRepository;
     }
@@ -43,14 +39,19 @@ class ProductService
         return new ProductResource($product);
     }
 
-    public function update(Product $product, array $validatedData): ProductResource
+    public function update($id, array $validatedData): ?ProductResource
     {
+        $product = $this->productRepository->findById($id);
+        if (!$product) {
+            return null;
+        }
         $this->productRepository->update($product, $validatedData);
         return new ProductResource($product);
     }
 
-    public function delete(Product $product): bool
+    public function delete($id): bool
     {
+        $product = $this->productRepository->findById($id);
         return $this->productRepository->delete($product);
     }
 }

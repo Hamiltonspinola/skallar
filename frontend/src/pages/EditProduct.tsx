@@ -8,8 +8,9 @@ import { ValidationService } from '../services/ValidationService';
 export const EditProduct = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [initialData, setInitialData] = useState(null);
-  const { formData, handleChange, setFormData, isLoading } = useProductForm(initialData);
+  const [initialData, setInitialData] = useState<any | null>(null);
+  const { formData, handleChange } = useProductForm(initialData || {}); // Removido setFormData
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -17,18 +18,22 @@ export const EditProduct = () => {
         const response = await ProductService.getById(Number(id));
         console.log('Produto carregado:', response.data.data);
 
-        setInitialData({
+        const productData = {
           name: response.data.data.name,
-          price: String(response.data.data.price).replace(',', '.'),
-          quantity: parseInt(response.data.data.quantity) || 0,
+          price: String(response.data.data.price),
+          quantity: Number(response.data.data.quantity),
           description: response.data.data.description,
-        });
+        };
+
+        setInitialData(productData);
+        setIsLoading(false);
       } catch (error) {
         console.error('Erro ao buscar produto:', error);
+        setIsLoading(false);
       }
     };
 
-    if (!initialData) fetchProduct();
+    fetchProduct();
   }, [id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -44,9 +49,9 @@ export const EditProduct = () => {
     }
   };
 
-  if (isLoading || !formData) return <p className="text-center">Carregando...</p>;
-
-  return <div className='w-full'>
-    <ProductForm formData={formData} onChange={handleChange} onSubmit={handleSubmit} />;
-  </div>
+  return (
+    <div className="w-full">
+      {isLoading ? <p className="text-center">Carregando...</p> : <ProductForm formData={formData} onChange={handleChange} onSubmit={handleSubmit} />}
+    </div>
+  );
 };
