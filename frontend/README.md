@@ -136,7 +136,7 @@ Caso você queira executar a aplicação em seu computador, siga os passos abaix
 2. **Passos de Instalação:**
    - **Clonar o Repositório:**
      ```bash
-     git clone <URL-do-repositório>
+     git clone https://github.com/Hamiltonspinola/skallar.git
      ```
    - **Entrar na Pasta do Projeto:**
      ```bash

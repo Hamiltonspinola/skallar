@@ -64,7 +64,7 @@ Esta API permite gerenciar um catálogo de produtos, possibilitando operações 
 **Clone o repositório:**
 
     ```bash
-    git clone https://github.com/seu-usuario/product-api.git
+    git clone https://github.com/Hamiltonspinola/skallar.git
     
     cd product-api
     
